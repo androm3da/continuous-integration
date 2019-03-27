@@ -22,6 +22,10 @@ Environment variables:
       in PATH.
   LD:
       If no LD value is specified, ${CROSS_COMPILE}ld is used.
+  OBJCOPY:
+      If no OBJCOPY value is specified, the script will attempt to set OBJCOPY
+      to llvm-objcopy-10, llvm-objcopy-9, llvm-objcopy-8, llvm-objcopy-7,
+      llvm-objcopy, then ${CROSS_COMPILE}objcopy if they are found in PATH.
   REPO:
       Nicknames for trees:
         linux (default)

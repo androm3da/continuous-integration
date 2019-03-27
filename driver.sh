@@ -5,7 +5,7 @@ set -eu
 setup_variables() {
   while [[ ${#} -ge 1 ]]; do
     case ${1} in
-      "AR="*|"ARCH="*|"CC="*|"LD="*|"NM"=*|"OBJDUMP"=*|"OBJSIZE"=*|"REPO="*) export "${1?}" ;;
+      "AR="*|"ARCH="*|"CC="*|"LD="*|"NM"=*|"OBJCOPY"=*|"OBJDUMP"=*|"OBJSIZE"=*|"REPO="*) export "${1?}" ;;
       "-c"|"--clean") cleanup=true ;;
       "-j"|"--jobs") shift; jobs=$1 ;;
       "-j"*) jobs=${1/-j} ;;
@@ -189,7 +189,7 @@ check_dependencies() {
     command -v ${readelf} &>/dev/null && break
   done
 
-  # Check for LD, CC, and AR environmental variables
+  # Check for LD, CC, OBJCOPY, and AR environmental variables
   # and print the version string of each. If CC and AR
   # don't exist, try to find them.
   # lld isn't ready for all architectures so it's just
@@ -234,6 +234,14 @@ check_dependencies() {
     done
   fi
 
+  if [[ -z "${OBJCOPY:-}" ]]; then
+    for OBJCOPY in $(gen_bin_list llvm-objcopy) llvm-objcopy "${CROSS_COMPILE:-}"objcopy; do
+      command -v ${OBJCOPY} 2>/dev/null && break
+    done
+  fi
+  check_ar_version
+  ${OBJCOPY} --version
+
   if [[ -z "${OBJDUMP:-}" ]]; then
     for OBJDUMP in $(gen_bin_list llvm-objdump) llvm-objdump "${CROSS_COMPILE:-}"objdump; do
       command -v ${OBJDUMP} 2>/dev/null && break
@@ -268,6 +276,27 @@ check_ar_version() {
   fi
 }
 
+# Optimistically check to see that the user has a llvm-objcopy
+# with https://reviews.llvm.org/rL357017. If they don't,
+# fall back to GNU objcopy and let them know.
+check_objcopy_version() {
+  if ${OBJCOPY} --version | grep -q "LLVM" && \
+     [[ $(${OBJCOPY} --version | grep version | sed -e 's/.*LLVM version //g' -e 's/[[:blank:]]*$//' -e 's/\.//g' -e 's/svn//' ) -lt 900 ]]; then
+    set +x
+    echo
+    echo "${OBJCOPY} found but appears to be too old to build the kernel (needs to be at least 9.0.0)."
+    echo
+    echo "Please either update llvm-objcopy from your distro or build it from source!"
+    echo
+    echo "See https://github.com/ClangBuiltLinux/linux/issues/418 for more info."
+    echo
+    echo "Falling back to GNU objcopy..."
+    echo
+    OBJCOPY=${CROSS_COMPILE:-}objcopy
+    set -x
+  fi
+}
+
 mako_reactor() {
   # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/kbuild/kbuild.txt
   time \
@@ -282,6 +311,7 @@ mako_reactor() {
        KCFLAGS="-Wno-implicit-fallthrough" \
        LD="${LD}" \
        NM="${NM}" \
+       OBJCOPY="${OBJCOPY}" \
        OBJDUMP="${OBJDUMP}" \
        OBJSIZE="${OBJSIZE}" \
        "${@}"
