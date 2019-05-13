@@ -5,7 +5,7 @@ set -eu
 setup_variables() {
   while [[ ${#} -ge 1 ]]; do
     case ${1} in
-      "AR="*|"ARCH="*|"CC="*|"LD="*|"NM"=*|"OBJCOPY"=*|"OBJDUMP"=*|"OBJSIZE"=*|"REPO="*|"STRIP"=*) export "${1?}" ;;
+      "AR="*|"ARCH="*|"AS"=*|"CC="*|"LD="*|"NM"=*|"OBJCOPY"=*|"OBJDUMP"=*|"OBJSIZE"=*|"REPO="*|"STRIP"=*) export "${1?}" ;;
       "-c"|"--clean") cleanup=true ;;
       "-j"|"--jobs") shift; jobs=$1 ;;
       "-j"*) jobs=${1/-j} ;;
@@ -228,6 +228,12 @@ check_dependencies() {
   check_ar_version
   ${AR} --version
 
+  if [[ -z "${AS:-}" ]]; then
+    for AS in $(gen_bin_list clang) clang "${CROSS_COMPILE:-}"as; do
+      command -v ${AS} 2>/dev/null && break
+    done
+  fi
+
   if [[ -z "${NM:-}" ]]; then
     for NM in $(gen_bin_list llvm-nm) llvm-nm "${CROSS_COMPILE:-}"nm; do
       command -v ${NM} 2>/dev/null && break
@@ -311,6 +317,7 @@ mako_reactor() {
   KBUILD_BUILD_HOST=clangbuiltlinux \
   make -j"${jobs:-$(nproc)}" \
        AR="${AR}" \
+       AS="${AS}" \
        CC="${CC}" \
        HOSTCC="${CC}" \
        HOSTLD="${HOSTLD:-ld}" \
