@@ -10,6 +10,8 @@ matrix:
       env: ARCH=arm32_v7 LD=ld.lld-10
     - name: "ARCH=arm64 LD=ld.lld"
       env: ARCH=arm64 LD=ld.lld-10
+    - name: "ARCH=i386 LD=ld.lld"
+      env: ARCH=i386 LD=ld.lld-10
     - name: "ARCH=mipsel"
       env: ARCH=mipsel
     - name: "ARCH=ppc32"
@@ -56,6 +58,9 @@ matrix:
       if: type = cron
     - name: "ARCH=arm64 LD=ld.lld REPO=4.19"
       env: ARCH=arm64 LD=ld.lld-10 REPO=4.19
+      if: type = cron
+    - name: "ARCH=i386 LD=ld.lld REPO=4.19"
+      env: ARCH=i386 LD=ld.lld-10 REPO=4.19
       if: type = cron
     - name: "ARCH=ppc64le REPO=4.19"
       env: ARCH=ppc64le REPO=4.19
