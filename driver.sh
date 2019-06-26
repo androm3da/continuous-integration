@@ -94,6 +94,13 @@ setup_variables() {
                      -append "console=ttyAMA0 root=/dev/vda" )
       export CROSS_COMPILE=aarch64-linux-gnu- ;;
 
+    "i386")
+      config=defconfig
+      image_name=bzImage
+      qemu="qemu-system-i386"
+      qemu_cmdline=( -drive "file=images/i386/rootfs.ext4,format=raw,if=ide"
+                     -append "console=ttyS0 root=/dev/sda" ) ;;
+
     "mipsel")
       config=malta_defconfig
       image_name=vmlinux
