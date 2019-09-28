@@ -192,11 +192,13 @@ check_dependencies() {
   # Check for LD, CC, OBJCOPY, and AR environmental variables
   # and print the version string of each. If CC and AR
   # don't exist, try to find them.
-  # lld isn't ready for all architectures so it's just
-  # simpler to fall back to GNU ld when LD isn't specified
-  # to avoid architecture specific selection logic.
 
-  "${LD:="${CROSS_COMPILE:-}"ld}" --version
+  if [[ -z "${LD:-}" ]]; then
+    for LD in $(gen_bin_list ld.lld) ld.lld "${CROSS_COMPILE:-}"ld; do
+      command -v ${LD} 2>/dev/null && break
+    done
+  fi
+  ${LD} --version
 
   if [[ -z "${CC:-}" ]]; then
     for CC in $(gen_bin_list clang) clang; do
@@ -343,7 +345,7 @@ apply_patches() {
 build_linux() {
   # Wrap CC in ccache if it is available (it's not strictly required)
   CC="$(command -v ccache) ${CC}"
-  [[ ${LD} =~ lld ]] && HOSTLD=${LD}
+  HOSTLD=${LD}
 
   if [[ -d ${tree} ]]; then
     cd ${tree}
