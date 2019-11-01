@@ -1,0 +1,19 @@
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 6b84afdd7..37b7db389 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -55,7 +55,14 @@ else
+ KBUILD_LDFLAGS += $(shell $(LD) --help 2>&1 | grep -q "\-z noreloc-overflow" \
+ 	&& echo "-z noreloc-overflow -pie --no-dynamic-linker")
+ endif
++ifeq ($(CONFIG_RELOCATABLE), y)
++# LLD by default disallows relocations in read-only segments. For a relocatable
++# kernel, we pass -z notext to the linker to explicitly allow relocations. This
++# behavior is default for BFD.
++LDFLAGS_vmlinux := -z notext -T
++else
+ LDFLAGS_vmlinux := -T
++endif
+ 
+ hostprogs-y	:= mkpiggy
+ HOST_EXTRACFLAGS += -I$(srctree)/tools/include
