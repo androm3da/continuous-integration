@@ -184,7 +184,7 @@ gen_bin_list() {
 check_dependencies() {
   # Check for existence of needed binaries
   command -v nproc
-  command -v "${CROSS_COMPILE:-}"as
+# command -v "${CROSS_COMPILE:-}"as
   command -v ${qemu}
   command -v timeout
   command -v unbuffer
