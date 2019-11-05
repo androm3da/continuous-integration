@@ -2,6 +2,8 @@ language: cpp
 matrix:
   include:
     # linux
+    - name: "ARCH=hexagon LD=ld.lld"
+      env: ARCH=hexagon LD=ld.lld-10
     - name: "ARCH=arm32_v5 LD=ld.lld"
       env: ARCH=arm32_v5 LD=ld.lld-10
     - name: "ARCH=arm32_v6"
@@ -160,7 +162,6 @@ after_script:
 notifications:
   email:
     recipients:
-      - ndesaulniers@google.com
-      - natechancellor@gmail.com
+      - bcain@quicinc.com
     on_success: never
     on_failure: always

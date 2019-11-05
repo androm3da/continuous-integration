@@ -94,6 +94,12 @@ setup_variables() {
                      -append "console=ttyAMA0 root=/dev/vda" )
       export CROSS_COMPILE=aarch64-linux-gnu- ;;
 
+    "hexagon")
+      config=comet_defconfig
+      image_name=vmlinux
+      export ARCH=hexagon
+      export CROSS_COMPILE=hexagon-linux-musl- ;;
+
     "mipsel")
       config=malta_defconfig
       image_name=vmlinux
@@ -116,6 +122,7 @@ setup_variables() {
                      -initrd "images/ppc32/rootfs.cpio" )
       export ARCH=powerpc
       export CROSS_COMPILE=powerpc-linux-gnu- ;;
+
 
     "ppc64")
       config=pseries_defconfig
