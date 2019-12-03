@@ -1,0 +1,23 @@
+From 0efff01543f75b558eaec97bd348391b0efbee06 Mon Sep 17 00:00:00 2001
+From: Sid Manning <sidneym@codeaurora.org>
+Date: Mon, 27 Aug 2018 10:20:55 -0500
+Subject: [PATCH] ClangChanges
+
+---
+ arch/hexagon/configs/comet_defconfig | 2 +-
+ arch/hexagon/include/asm/atomic.h    | 8 ++++----
+ arch/hexagon/include/asm/bitops.h    | 8 ++++----
+ arch/hexagon/include/asm/cmpxchg.h   | 2 +-
+ include/linux/compiler-gcc.h         | 3 ++-
+ 5 files changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/arch/hexagon/configs/comet_defconfig b/arch/hexagon/configs/comet_defconfig
+index e324f65..951fb42 100644
+--- a/arch/hexagon/configs/comet_defconfig
++++ b/arch/hexagon/configs/comet_defconfig
+@@ -82,4 +82,4 @@ CONFIG_FRAME_WARN=0
+ CONFIG_MAGIC_SYSRQ=y
+ CONFIG_DEBUG_FS=y
+ # CONFIG_SCHED_DEBUG is not set
+-CONFIG_DEBUG_INFO=y
++CONFIG_DEBUG_INFO=n

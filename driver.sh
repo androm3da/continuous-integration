@@ -5,7 +5,7 @@ set -eu
 setup_variables() {
   while [[ ${#} -ge 1 ]]; do
     case ${1} in
-      "AR="*|"ARCH="*|"CC="*|"LD="*|"NM"=*|"OBJDUMP"=*|"OBJSIZE"=*|"REPO="*) export "${1?}" ;;
+      "AR="*|"ARCH="*|"CC="*|"LD="*|"NM"=*|"OBJDUMP"=*|"OBJSIZE"=*|"REPO="*|"LIBGCC="*) export "${1?}" ;;
       "-c"|"--clean") cleanup=true ;;
       "-j"|"--jobs") shift; jobs=$1 ;;
       "-j"*) jobs=${1/-j} ;;
@@ -94,6 +94,13 @@ setup_variables() {
                      -append "console=ttyAMA0 root=/dev/vda" )
       export CROSS_COMPILE=aarch64-linux-gnu- ;;
 
+    "hexagon")
+      config=comet_defconfig
+      image_name=vmlinux
+      qemu="/bin/true"
+      export ARCH=hexagon
+      export CROSS_COMPILE=hexagon-linux-musl- ;;
+
     "mipsel")
       config=malta_defconfig
       image_name=vmlinux
@@ -174,6 +181,12 @@ gen_bin_list() {
     seq -f "${1:?}-%.0f" "${latest_llvm_version}" -1 "${oldest_llvm_version}"
 }
 
+check_libgcc() {
+  if [[ -z "${LIBGCC:-}" ]]; then
+     LIBGCC=$(dirname ${CC})/../lib/linux/${LIBGCC}
+  fi
+}
+
 check_dependencies() {
   # Check for existence of needed binaries
   command -v nproc
@@ -220,6 +233,8 @@ check_dependencies() {
     exit;
   }
 
+  check_libgcc ${CC}
+
   if [[ -z "${AR:-}" ]]; then
     for AR in $(gen_bin_list llvm-ar) llvm-ar "${CROSS_COMPILE:-}"ar; do
       command -v ${AR} 2>/dev/null && break
@@ -245,6 +260,7 @@ check_dependencies() {
       command -v ${OBJSIZE} 2>/dev/null && break
     done
   fi
+
 }
 
 # Optimistically check to see that the user has a llvm-ar
@@ -284,6 +300,7 @@ mako_reactor() {
        NM="${NM}" \
        OBJDUMP="${OBJDUMP}" \
        OBJSIZE="${OBJSIZE}" \
+       LIBGCC="${LIBGCC}" \
        "${@}"
 }
 

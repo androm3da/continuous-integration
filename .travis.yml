@@ -2,6 +2,8 @@ language: cpp
 matrix:
   include:
     # linux
+    - name: "ARCH=hexagon LD=ld.lld LIBGCC=libclang_rt.builtins-hexagon.a"
+      env: ARCH=hexagon LD=ld.lld-10 LIBGCC=libclang_rt.builtins-hexagon.a
     - name: "ARCH=arm32_v5 LD=ld.lld"
       env: ARCH=arm32_v5 LD=ld.lld-10
     - name: "ARCH=arm32_v6"
