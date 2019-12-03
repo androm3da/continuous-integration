@@ -183,7 +183,7 @@ gen_bin_list() {
 }
 
 check_libgcc() {
-  if [[ -z "${LIBGCC:-}" ]]; then
+  if [[ ! -z "${LIBGCC:-}" ]]; then
      LIBGCC=$(dirname ${CC})/../lib/linux/${LIBGCC}
   fi
 }
