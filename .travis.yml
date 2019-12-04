@@ -153,6 +153,7 @@ script:
         --env ARCH=${ARCH} \
         --env LD=${LD} \
         --env REPO=${REPO} \
+        --env LIBGCC=${LIBGCC} \
         --rm \
         --workdir /travis \
         --volume ${TRAVIS_BUILD_DIR}:/travis \
